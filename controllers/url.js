@@ -9,8 +9,9 @@ async function generateNewShortUrl(req, res) {
     shortId,
     redirectUrl: body.url.trim(),
     visitHistory: [],
+    createdBy: req.user._id
   });
-  const urls = await URL.find({});
+  const urls = await URL.find({createdBy:req.user._id});
 
   return res.render("home", {
     id: shortId,

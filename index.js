@@ -1,12 +1,15 @@
 const express = require("express");
-const urlRoute = require("./routes/url.js");
 const URL = require("./models/url.js");
 const path = require('path');
-const staticRoute = require('./routes/staticRouter.js');
 const { connectDb } = require("./connect.js");
+const cookieParser = require('cookie-parser');
+const {restrictToLoggedInUser, checkAuth} = require('./middlewares/auth');
+const urlRoute = require("./routes/url.js");
+const staticRoute = require('./routes/staticRouter.js');
+const userRoute = require("./routes/user.js");
 
 const PORT = 8001;
-const MONGO_URL = "";
+const MONGO_URL = "mongodb://127.0.0.1:27017";
 
 connectDb(MONGO_URL)
   .then(() => console.log("Connected to MongoDB"))
@@ -20,9 +23,11 @@ app.set('views', path.resolve('./views'));
 app.set('port', PORT);
 app.use(express.json());
 app.use(express.urlencoded({extended:false}));
+app.use(cookieParser());
+app.use("/url", restrictToLoggedInUser, urlRoute);
+app.use('/', checkAuth,staticRoute);
+app.use('/user', userRoute);
 
-app.use("/url", urlRoute);
-app.use('/', staticRoute);
 app.get("/:id", async (req, res) => {
   const id = req.params.id;
   const data = await URL.findOneAndUpdate(
