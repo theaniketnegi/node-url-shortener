@@ -17,7 +17,8 @@ async function handleUserLogin(req, res){
     if(!user) return res.render('login', {err:'Wrong email/password'})
     
     const token = setUser(user);
-    res.cookie("uid", token);
-    return res.redirect("/");
+    // res.cookie("uid", token);
+    // return res.redirect("/");
+    return res.json({token});
 }
 module.exports={handleUserSignup, handleUserLogin};
