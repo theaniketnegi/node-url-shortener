@@ -3,7 +3,7 @@ const URL = require("./models/url.js");
 const path = require('path');
 const { connectDb } = require("./connect.js");
 const cookieParser = require('cookie-parser');
-const {restrictToLoggedInUser, checkAuth} = require('./middlewares/auth');
+const {checkForAuthentication, restrictToRole} = require('./middlewares/auth');
 const urlRoute = require("./routes/url.js");
 const staticRoute = require('./routes/staticRouter.js');
 const userRoute = require("./routes/user.js");
@@ -24,8 +24,9 @@ app.set('port', PORT);
 app.use(express.json());
 app.use(express.urlencoded({extended:false}));
 app.use(cookieParser());
-app.use("/url", restrictToLoggedInUser, urlRoute);
-app.use('/', checkAuth,staticRoute);
+app.use(checkForAuthentication);
+app.use("/url", restrictToRole(['NORMAL', 'ADMIN']), urlRoute);
+app.use('/', staticRoute);
 app.use('/user', userRoute);
 
 app.get("/:id", async (req, res) => {

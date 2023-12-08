@@ -4,7 +4,8 @@ const secret = '!214@$@$%!';
 function setUser(user){
     return jwt.sign({
         id: user._id,
-        email: user.email
+        email: user.email,
+        role: user.role
     }, secret);
 }
 
